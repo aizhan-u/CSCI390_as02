@@ -26,10 +26,19 @@ class MNX:
 		assert node is not None
 		return node.children
 
+	def getParent(self, node):
+		assert node is not None
+		return node.parent
+
 	def minimax(self):		
 		terminal_val = self.max_v(self.root)
+		traversed = [self.root.Name]
 		successors = self.getChildren(self.root)
-		traversed=['A', 'B', 'E']; #example of solution_array
+		children = list(successors)
+		for n in children:
+			if (n.value == terminal_val):
+				children += self.getChildren(n)
+				traversed.append(n.Name)
 		res=Result();
 
 
@@ -46,17 +55,19 @@ class MNX:
 	def max_v(self, node):		
 		if self.terminalTest(node):
 			return self.utilityChecking(node)		
-		max_v = 1000 #we use 1000 as the initial_maximum value
+		max_v = -1000 #we use -1000 as the initial_maximum value
 		deeper_layer = self.getChildren(node)
 		for deeper_node in deeper_layer:
-			max_v = min(max_v, self.min_v(deeper_node))
+			max_v = max(max_v, self.min_v(deeper_node))
+			deeper_node.value = self.min_v(deeper_node)
 		return max_v
 
 	def min_v(self, node):		
 		if self.terminalTest(node):
 			return self.utilityChecking(node)
-		min_v = -1000 #we use -1000 as the initial_minimum value
+		min_v = 1000 #we use 1000 as the initial_minimum value
 		deeper_layer = self.getChildren(node)
 		for deeper_node in deeper_layer:
-			min_v = max(min_v, self.max_v(deeper_node))
+			min_v = min(min_v, self.max_v(deeper_node))
+			deeper_node.value = self.max_v(deeper_node)
 		return min_v
